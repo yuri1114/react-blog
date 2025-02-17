@@ -2,69 +2,90 @@ import { useState } from "react";
 import "./App.css";
 
 function App() {
-  let [title, chageTitle] = useState([
+  let [글제목, 제목변경] = useState([
     "남자코트 추천",
     "강남 우동맛집",
     "파이썬 독학",
   ]);
-  let [like, addLike] = useState([0, 0, 0]);
-
+  let [title, setTitle] = useState(0);
+  let [따봉, 따봉변경] = useState([0, 0, 0]);
   let [modal, setModal] = useState(false);
-  let [modalTitle, setModalTitle] = useState(0);
-  let [value, valueChage] = useState("");
+  let [입력값, 입력값변경] = useState([""]);
+
+  function 함수(i) {
+    let likeCopy = [...따봉];
+    likeCopy[i] = likeCopy[i] + 1;
+    따봉변경(likeCopy);
+  }
+
+  function 글변경() {
+    let copy = [...글제목];
+    copy[0] = "여자코트 추천";
+    제목변경(copy);
+  }
+
+  function 글정렬() {
+    let copyArray = [...글제목];
+    copyArray.sort();
+    제목변경(copyArray);
+  }
+
+  function 글추가() {
+    let addArray = [...글제목];
+    addArray.unshift(입력값);
+    제목변경(addArray);
+  }
 
   return (
     <div className="App">
+      <button onClick={글변경}>수정</button>
+      <button onClick={글정렬}>가나다 정렬</button>
+
+      <button
+        onClick={() => {
+          글추가();
+        }}
+      >
+        {" "}
+        등록{" "}
+      </button>
+      <input
+        onChange={(e) => {
+          console.log("??", 입력값);
+          입력값변경(e.target.value);
+        }}
+        type="text"
+      />
       <div className="black-nav">
-        <h4>React study 블로그</h4>
+        <div>개발 blog</div>
       </div>
-      <button
-        onClick={() => {
-          let copy = [...title];
-          copy[0] = "여자코트 추천";
-          chageTitle(copy);
-        }}
-      >
-        수정
-      </button>
 
-      <button
-        onClick={() => {
-          let copy = [...title];
-          copy.sort();
-          chageTitle(copy);
-        }}
-      >
-        가나다순정렬
-      </button>
-
-      {title.map(function (a, i) {
+      {글제목.map(function (a, i) {
         return (
-          <div className="list">
+          <div className="list" key={i}>
             <h4
               onClick={() => {
-                setModal(!modal, setModalTitle(i));
+                setModal(!modal);
+                setTitle(i);
               }}
             >
-              {title[i]}
+              {글제목[i]}
               <span
                 onClick={(e) => {
                   e.stopPropagation();
-                  let copy = [...like];
-                  copy[i] = copy[i] + 1;
-                  addLike(copy);
+                  함수(i);
                 }}
               >
                 👍
-              </span>
-              {like[i]}
+              </span>{" "}
+              {따봉[i]}
             </h4>
             <p>2월 17일 발행</p>
             <button
               onClick={() => {
-                let copy = [...title];
+                let copy = [...글제목];
                 copy.splice(i, 1);
-                chageTitle(copy);
+                제목변경(copy);
               }}
             >
               삭제
@@ -73,46 +94,18 @@ function App() {
         );
       })}
 
-      <input
-        onChange={(e) => {
-          valueChage(e.target.value);
-          console.log(value);
-        }}
-        type="text"
-      ></input>
-      <button
-        onClick={() => {
-          let copy = [...title];
-          copy.unshift(value);
-          chageTitle(copy);
-
-          let copyLike = [...like];
-          copyLike.unshift(0); // 새 글 추가 시 좋아요 초기화
-          addLike(copyLike);
-        }}
-      >
-        글발행
-      </button>
-
-      {modal == true ? (
-        <Modal title={title} modalTitle={modalTitle} setModal={setModal} />
-      ) : (
-        false
-      )}
+      {modal == true ? <Modal 글제목={글제목} title={title}></Modal> : false}
     </div>
   );
+
+  function Modal(props) {
+    return (
+      <div className="modal">
+        <h4>{props.글제목[props.title]}</h4>
+        <p>날짜</p>
+        <p>상세내용</p>
+      </div>
+    );
+  }
 }
-
-function Modal(props) {
-  return (
-    <div className="modal">
-      <h4>{props.title[props.modalTitle]}</h4>
-      <p>날짜</p>
-      <p>상세내용</p>
-
-      <button onClick={() => props.setModal(false)}>닫기</button>
-    </div>
-  );
-}
-
 export default App;
